@@ -29,8 +29,19 @@ class ProductUpdateView(UpdateAPIView):
     lookup_field = id
 
 class ProductListView(ListAPIView):
-    queryset = Product.objects.all()
     serializer_class = ProductListSerializer
+
+    def get_queryset(self):
+        queryset = Product.objects.all()
+        price_gt = self.request.query_params.get('price_gt', None)
+        price_lt = self.request.query_params.get('price_lt', None)
+
+        if price_gt:
+            queryset = queryset.filter(price__gt=price_gt)
+        if price_lt:
+            queryset = queryset.filter(price__lt=price_lt)
+        
+        return queryset
 
 class CategoryListView(ListAPIView):
     queryset = ProductCategory.objects.all()

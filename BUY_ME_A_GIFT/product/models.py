@@ -18,3 +18,20 @@ class Product(models.Model):
     product_category = models.ForeignKey(
         ProductCategory, on_delete=models.CASCADE, related_name='product_category')
     owner = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='owner')
+
+class WishList(models.Model):
+    user = models.OneToOneField(
+        'user.User', on_delete=models.CASCADE, related_name="wishlist")
+    products = models.ManyToManyField(
+        Product, related_name='whishlist_products', blank=True)
+
+    def save(self, *args, **kwargs):
+        categories = set()
+        products = []
+        for product in self.products.all():
+            if product.product_category in categories:
+                continue
+            categories.add(product.product_category)
+            products.append(product)
+        self.products.set(products)
+        super(WishList, self).save(*args, **kwargs)

@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-# from Product.models import Product
+from django.db.models.signals import post_save
 import uuid
+from django.dispatch import receiver
+from product.models import WishList
 
 # Create your models here.
 
@@ -32,20 +34,10 @@ class User(AbstractBaseUser):
 
     USERNAME_FIELD = 'email'
 
-
-class WishList(models.Model):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="wishlist")
-    products = models.ManyToManyField(
-        'product.Product', related_name='whishlist_products')
-
-    def save(self, *args, **kwargs):
-        categories = set()
-        products = []
-        for product in self.products.all():
-            if product.product_category in categories:
-                continue
-            categories.add(product.product_category)
-            products.append(product)
-        self.products.set(products)
-        super(WishList, self).save(*args, **kwargs)
+'''
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        WishList.objects.get_or_create(user=instance)
+        WishList.save()
+'''
