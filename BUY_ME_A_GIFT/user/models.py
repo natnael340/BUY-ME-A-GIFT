@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+# from Product.models import Product
 import uuid
+
 # Create your models here.
 
 
@@ -35,15 +37,15 @@ class WishList(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="wishlist")
     products = models.ManyToManyField(
-        Product, on_delete=models.CASCADE, related_name='whishlist_products')
+        'product.Product', related_name='whishlist_products')
 
     def save(self, *args, **kwargs):
         categories = set()
         products = []
         for product in self.products.all():
-            if product.category in categories:
+            if product.product_category in categories:
                 continue
-            categories.add(product.category)
+            categories.add(product.product_category)
             products.append(product)
         self.products.set(products)
         super(WishList, self).save(*args, **kwargs)

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'product.apps.ProductConfig',
     'user.apps.UserConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -101,7 +102,18 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+AUTH_USER_MODEL = 'user.User'
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'natnaeltilahun157@gmail.com'
+EMAIL_HOST_PASSWORD = 'your_email_password'
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
