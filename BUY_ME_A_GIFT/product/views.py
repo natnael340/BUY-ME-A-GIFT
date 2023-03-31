@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated, BasePermission
 from .models import Product, ProductCategory
-from .serializers import ProductCreateSerializer, ProductListSerializer, ProductCategorySerializer
+from .serializers import ProductCreateSerializer, ProductListSerializer, ProductCategorySerializer, ProductCategoryCreateSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 # Create your views here.
 
@@ -39,7 +39,7 @@ class CategoryListView(ListAPIView):
 class CategoryCreateView(CreateAPIView):
     queryset = ProductCategory.objects.all()
     authentication_classes = [JWTAuthentication]
-    serializer_class = ProductCategorySerializer
+    serializer_class = ProductCategoryCreateSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
