@@ -9,6 +9,8 @@ djangorestframework = "*"
 markdown = "*"
 django-filter = "*"
 djangorestframework-simplejwt = "*"
+psycopg2-binary = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 

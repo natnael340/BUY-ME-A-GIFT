@@ -20,7 +20,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     product_category = ProductCategoryCreateSerializer()
     class Meta:
         model = Product
-        fields = ['name', 'price', 'created_time', 'product_category']
+        fields = ['id','name', 'price', 'created_time', 'product_category']
 
 class WishListSerializer(serializers.ModelSerializer):
     products = ProductListSerializer(many=True)
