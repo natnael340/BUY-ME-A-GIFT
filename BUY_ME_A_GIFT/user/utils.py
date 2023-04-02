@@ -2,11 +2,11 @@ from django.core.mail import EmailMessage
 
 class Util:
     @classmethod
-    def send_email(data):
+    def send_email(self, data):
         email = EmailMessage(
-            subject=data['subject'],
-            body=data['body'],
-            from_email=data['from_email'],
+            subject=data['email_subject'],
+            body=data['email_body'],
             to=[data['to_email']]
         )
+        
         email.send()

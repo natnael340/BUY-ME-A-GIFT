@@ -74,3 +74,15 @@ class WishListCreateSerializer(serializers.Serializer):
         wishlist.save()
         #wishlist.refresh_from_db()
         return {"product_id": product.id}
+    
+class WishListUnauthorizedSerializer(serializers.ModelSerializer):
+    products = ProductListSerializer(many=True)
+
+    class Meta:
+        model = WishList
+        fields = ['products']
+    def to_representation(self, instance):
+        if instance is None:
+            return {}
+        return super().to_representation(instance)
+    

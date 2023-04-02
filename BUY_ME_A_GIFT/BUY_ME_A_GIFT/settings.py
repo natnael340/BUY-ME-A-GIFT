@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
     'product.apps.ProductConfig',
     'user.apps.UserConfig',
     'rest_framework',
@@ -118,11 +120,10 @@ REST_FRAMEWORK = {
     ),
 }
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'natnaeltilahun157@gmail.com'
-EMAIL_HOST_PASSWORD = 'your_email_password'
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = '114f899c18a50c'
+EMAIL_HOST_PASSWORD = 'b9805b6a5cf7bb'
+EMAIL_PORT = '2525'
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 

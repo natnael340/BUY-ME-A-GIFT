@@ -10,8 +10,13 @@ class ProductCategory(models.Model):
 
 
 class Product(models.Model):
+    currency_choice = (
+        ('USD', 'US Dollar'),
+        ('EUR', 'Euro'),
+    )
     name = models.CharField(max_length=128)
     price = models.FloatField()
+    currency = models.CharField(max_length=64, null=True, choices=currency_choice)
     rank = models.IntegerField()
     created_time = models.DateTimeField(auto_now_add=True, editable=False)
     updated_time = models.DateTimeField(auto_now=True)
