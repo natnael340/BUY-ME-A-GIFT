@@ -2,8 +2,12 @@ from rest_framework import serializers
 from .models import User
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth.forms import PasswordResetForm
-
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import smart_str, force_str, DjangoUnicodeDecodeError, smart_bytes
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
+from .utils import Util
 class UserLoginSerializers(serializers.Serializer):
     email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True)
@@ -45,8 +49,20 @@ class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)    
 
     def validate(self, attrs):
-        self.cleaned_data = super().validate(attrs)
-        form = PasswordResetForm(self.cleaned_data)
-        if form.is_valid():
+        try:
+            email = attrs.get('email', '')
+            if User.objects.filter(email=email).exists():
+                user = User.objects.get(email=email)
+                uidb64 = urlsafe_base64_encode(user.id)
+                token = PasswordResetTokenGenerator.make_token(uidb64)
+                current_site = get_current_site(self.context.get('request')).domain
+                relativeUrl = reverse('password_reset', kwargs={'token': token})
+                absoluteUrl = f'http://{current_site}/{relativeUrl}'.format(current_site, relativeUrl)
+                email_body  = f"Hello, \n Here is your password reset url {absoluteUrl}".format(url=absoluteUrl)
+                data = {"email_body": email_body, 'to_email': user.email, 'email_subject': 'Reset Password'}
+                
+                Util.send_email(data)
             return attrs
-        raise serializers.ValidationError(form.errors) 
+        except expressions as indetifier:
+            pass
+        return super().validate(attrs)

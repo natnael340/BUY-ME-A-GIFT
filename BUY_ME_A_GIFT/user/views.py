@@ -29,11 +29,12 @@ class SignUpView(GenericAPIView):
 class PasswordResetView(GenericAPIView):
     serializer_class = PasswordResetSerializer
     
+    def get_serializer_context(self):
+        return super().get_serializer_context()
     def post(self, request):
         serilaizer = self.serializer_class(data=request.data)
-        if serilaizer.is_valid(raise_exception=True):
-            email = serilaizer.validated_data['email']
-
-
-def sendRestPasswordMessage(request, email):
-    PasswordResetView.as_view()(request=request, email_template_name='')
+        serilaizer.is_valid(raise_exception=True)
+            
+class PasswordResetTokenCheckView(GenericAPIView):
+    def get(self, request, uidb64, token):
+        pass
