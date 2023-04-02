@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated, BasePermission
-from .models import Product, ProductCategory
-from .serializers import ProductCreateSerializer, ProductListSerializer, ProductCategorySerializer, ProductCategoryCreateSerializer
+from .models import Product, ProductCategory, WishList
+from .serializers import ProductCreateSerializer, ProductListSerializer, ProductCategorySerializer, ProductCategoryCreateSerializer, WishListSerializer, WishListCreateSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 # Create your views here.
 
@@ -61,3 +61,19 @@ class CategoryUpdateView(UpdateAPIView):
     serializer_class = ProductCategorySerializer
     permission_classes=[IsAuthenticated & ISAuthorized]
     lookup_field = 'id'
+
+class WishListView(RetrieveAPIView):
+    serializer_class = WishListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        user = self.request.user
+        wishlist, _ = WishList.objects.prefetch_related('products').get_or_create(user=user)
+        return wishlist
+
+class WishCreateView(CreateAPIView):
+    serializer_class = WishListCreateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_context(self):
+        return {'request': self.request}
