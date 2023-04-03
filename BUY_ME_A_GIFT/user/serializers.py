@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import User
 from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, DjangoUnicodeDecodeError, smart_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -39,7 +38,8 @@ class UserRegisterSerializers(serializers.Serializer):
         fields = ('email', 'password')
         
     def create(self, validated_data):
-        print(validated_data)
+        if User.objects.filter(email=validated_data['email']).exists():
+            raise serializers.ValidationError("Email already exists")
         user = User.objects.create_user(
             email=validated_data['email'],
             password=validated_data['password'])

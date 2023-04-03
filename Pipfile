@@ -13,6 +13,9 @@ psycopg2-binary = "*"
 django-cors-headers = "*"
 drf-yasg = "*"
 mailtrap = "*"
+mypy = "*"
+django-stubs = "*"
+djangorestframework-stubs = "*"
 
 [dev-packages]
 

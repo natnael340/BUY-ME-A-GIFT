@@ -28,16 +28,8 @@ class User(AbstractBaseUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField('Email', unique=True)
     is_active = models.BooleanField('IsActive', default=True)
-    is_admin = models.BooleanField('IsAdmin', default=True)
+    is_admin = models.BooleanField('IsAdmin', default=False)
 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-
-'''
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        WishList.objects.get_or_create(user=instance)
-        WishList.save()
-'''
