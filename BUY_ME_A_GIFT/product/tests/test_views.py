@@ -2,14 +2,19 @@ from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from rest_framework.test import force_authenticate
 from rest_framework import status
-from product.models import Product, ProductCategory
+from product.models import Product, ProductCategory, WishList
 from product.views import (
     ProductView,
     ProductCreateView,
     ProductUpdateView,
     ProductDeleteView,
     ProductListView,
-    CategoryCreateView
+    CategoryCreateView,
+    CategoryDeleteView,
+    CategoryListView,
+    WishCreateView,
+    WishListView,
+    WishListUnauthorizedView
 )
 from user.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -265,3 +270,179 @@ class CategoryCreateViewTest(TestCase):
         
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+class CategoryDeleteViewTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create(email="test@example.com", password="123456")
+        self.user2 = User.objects.create(email="test2@example.com", password="123456")
+        self.product_category = ProductCategory.objects.create(name="test", owner=self.user)
+
+    def test_category_delete_view(self):
+        request = self.factory.delete(reverse('category_delete', kwargs={'id': self.product_category.id}))
+        token = RefreshToken.for_user(self.user)
+        force_authenticate(request, self.user, token=str(token.access_token))
+
+        response = CategoryDeleteView.as_view()(request, id=self.product_category.id)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(ProductCategory.objects.count(), 0)
+
+    def test_category_delete_view_from_another_user(self):
+        request = self.factory.delete(reverse('category_delete', kwargs={'id': self.product_category.id}))
+        token = RefreshToken.for_user(self.user2)
+        force_authenticate(request, self.user2, token=str(token.access_token))
+
+        response = CategoryDeleteView.as_view()(request, id=self.product_category.id)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+class CategoryListViewTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create(email="test@example.com", password="123456")
+        self.user2 = User.objects.create(email="test2@example.com", password="123456")
+        self.product_category = ProductCategory.objects.create(name="test", owner=self.user)
+        self.product_category2 = ProductCategory.objects.create(name="test1", owner=self.user)
+
+    
+    def test_category_list_view(self):
+        request = self.factory.get(reverse('categories'))
+        token = RefreshToken.for_user(self.user)
+        force_authenticate(request, self.user, token=str(token.access_token))
+
+        response = CategoryListView.as_view()(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        
+    def category_list_view_from_another_user(self):
+
+        request = self.factory.get(reverse('categories'))
+        token = RefreshToken.for_user(self.user2)
+        force_authenticate(request, self.user2, token=str(token.access_token))
+
+        response = CategoryListView.as_view()(request)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class WishListCreateViewTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create(email="test@example.com", password="123456")
+        self.product_category = ProductCategory.objects.create(name="test", owner=self.user)
+        self.product = Product.objects.create(
+            name='Product',
+            price=50.00,
+            currency='EUR',
+            rank=9,
+            owner=self.user,
+            product_category = self.product_category,
+        )
+        self.product2 = Product.objects.create(
+            name='Product2',
+            price=50.00,
+            currency='EUR',
+            rank=9,
+            owner=self.user,
+            product_category = self.product_category,
+        )
+    
+    def test_wishlist_create_view(self):
+        data = {
+            'product_id': self.product.id
+        }
+        request = self.factory.post(reverse('wishlist_create'), data=data, format='json')
+        token = RefreshToken.for_user(self.user)
+        force_authenticate(request, self.user, token=str(token.access_token))
+
+        response = WishCreateView.as_view()(request)
+        
+        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['product_id'], self.product.id)
+
+    def test_wishlist_create_view_with_missing_product_id(self):
+        request = self.factory.post(reverse('wishlist_create'), data={}, format='json')
+        token = RefreshToken.for_user(self.user)
+        force_authenticate(request, self.user, token=str(token.access_token))
+
+        response = CategoryCreateView.as_view()(request)
+        
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_wishlist_create_view_add_multiple_product_from_same_category(self):
+        data = {
+            'product_id': self.product.id
+        }
+        request = self.factory.post(reverse('wishlist_create'), data=data, format='json')
+        token = RefreshToken.for_user(self.user)
+        force_authenticate(request, self.user, token=str(token.access_token))
+
+        response = WishCreateView.as_view()(request)
+        
+        data = {
+            'product_id': self.product2.id
+        }
+        request = self.factory.post(reverse('wishlist_create'), data=data, format='json')
+        token = RefreshToken.for_user(self.user)
+        force_authenticate(request, self.user, token=str(token.access_token))
+
+        response = WishCreateView.as_view()(request)
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+class WishListViewTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create(email="test@example.com", password="123456")
+        self.user2 = User.objects.create(email="test2@example.com", password="123456")
+        self.product_category = ProductCategory.objects.create(name="test", owner=self.user)
+        self.product = Product.objects.create(
+            name='Product',
+            price=50.00,
+            currency='EUR',
+            rank=9,
+            owner=self.user,
+            product_category = self.product_category,
+        )
+        self.wishlist = WishList.objects.create(user=self.user)
+        self.wishlist.products.add(self.product)
+
+    def test_wishlist_view(self):
+        request = self.factory.get(reverse('wishlist'))
+        token = RefreshToken.for_user(self.user)
+        force_authenticate(request, self.user, token=str(token.access_token))
+
+        response = WishListView.as_view()(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class WishListUnauthTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create(email="test@example.com", password="123456")
+        self.user2 = User.objects.create(email="test2@example.com", password="123456")
+        self.product_category = ProductCategory.objects.create(name="test", owner=self.user)
+        self.product = Product.objects.create(
+            name='Product',
+            price=50.00,
+            currency='EUR',
+            rank=9,
+            owner=self.user,
+            product_category = self.product_category,
+        )
+        self.wishlist = WishList.objects.create(user=self.user)
+        self.wishlist.products.add(self.product)
+    
+    def test_wishlist_any_access_view(self):
+        request = self.factory.get(reverse('wish_list_unauthorized', kwargs={'uuid': self.user.id}))
+        
+
+        response = CategoryListView.as_view()(request, uuid=self.user.id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        
+    def test_wishlist_any_access_view_with_invalid_uuid(self):
+        request = self.factory.get(reverse('wish_list_unauthorized', kwargs={'uuid': 'aead'}))
+        
+        response = CategoryListView.as_view()(request, uuid=self.user.id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
