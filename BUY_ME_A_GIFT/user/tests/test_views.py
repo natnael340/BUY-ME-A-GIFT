@@ -66,7 +66,7 @@ class LoginViewTest(TestCase):
         """
         data = {
             "email": "abcd@gmail.com",
-            "password": "password"
+            "password": "passwor2"
         }
         request=self.factory.post(reverse('login'), data=data, format='json')
 
@@ -91,13 +91,30 @@ class LoginViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 class SignUpViewTestCase(TestCase):
+    """
+    Test Case for user registration
+    """
     def setUp(self) -> None:
+        """
+        Set up the test case.
+
+        1. Create a user object wich will be used to test the duplicate registration
+        2. Create a factory instance to make requests to the view
+        """
         self.factory = RequestFactory()
         user = User.objects.create(email="testuser@example.com")
         user.set_password("password")
         user.save()
     
     def test_sign_up_view(self) -> None:
+        """
+        This method is test if a user can be registered with valid
+        email and password
+
+        Request Data:
+         - email: valid email
+         - password: valid password
+        """
         user = {
             "email": "user@example.com",
             "password": "password"
@@ -110,6 +127,14 @@ class SignUpViewTestCase(TestCase):
         self.assertEqual(User.objects.filter(email=user["email"]).exists(), True)
 
     def test_sign_up_view_with_invalid_password(self) -> None:
+        """
+        This method is test if a user can be registered with valid
+        email and invalid password like empty password
+
+        Request Data:
+         - email: valid email
+         - password: empty password
+        """
         user = {
             "email": "user@example.com",
             "password": ""
@@ -119,9 +144,17 @@ class SignUpViewTestCase(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     def test_sign_up_view_with_invalid_email(self) -> None:
+        """
+        This method is test if a user can be registered with invalid
+        email and valid password
+
+        Request Data:
+         - email: invalid email address
+         - password: valid password
+        """
         user = {
             "email": "user@.com",
-            "password": ""
+            "password": "password"
         }
         request=self.factory.post(reverse('signup'), data=user, format='json')
         response = SignUpView.as_view()(request)
@@ -129,6 +162,14 @@ class SignUpViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_sign_up_view_with_same_email(self) -> None:
+        """
+        This method test if a user can be registered with existing
+        user email address
+
+        Request Data:
+         - email: existing user email address
+         - password: valid password
+        """
         user = {
             "email": "testuser@example.com",
             "password": "testpassword",
@@ -140,13 +181,29 @@ class SignUpViewTestCase(TestCase):
 
 
 class PasswordResetViewTestCase(TestCase):
+    """
+    Test cases for resetting user password
+    """
     def setUp(self) -> None:
+        """
+        Set up the test case.
+
+        1. Create a user object wich will be used to test for password reset
+        2. Create a factory instance to make requests to the view
+        """
         self.factory = RequestFactory()
         user = User.objects.create(email="testuser@example.com")
         user.set_password("password")
         user.save()
 
     def test_create_a_password_reset_token(self) -> None:
+        """
+        This method tests if a password reset token can be generated
+        for a valid user email
+
+        Request Data:
+         - email: existing user email address
+        """
         data = {
             "email": "testuser@example.com"
         }
@@ -156,6 +213,13 @@ class PasswordResetViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_a_password_reset_token_with_invalid_email(self) -> None:
+        """
+        This method tests if a password reset token can be generated
+        for a invalid user email
+
+        Request Data:
+         - email: unregistered user email
+        """
         data = {
             "email": "testuseraaa@example.com"
         }
@@ -165,7 +229,18 @@ class PasswordResetViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 class PasswordResetTokenCheckViewTestCase(TestCase):
+    """
+    Test cases for check if password reset token is valid
+    """
     def setUp(self) -> None:
+        """
+        Set up the test case.
+
+        1. Create a user object wich will be used to test for password reset
+        2. Generate a new password reset token for the created user
+        3. Generate base64 encoded uidb64 from user id
+        4. Create a factory instance to make requests to the view
+        """
         self.factory = RequestFactory()
         self.user = User.objects.create(email="testuser@example.com")
         self.user.set_password("password")
@@ -174,12 +249,28 @@ class PasswordResetTokenCheckViewTestCase(TestCase):
         self.token = PasswordResetTokenGenerator().make_token(self.user)
     
     def test_check_if_token_is_valid(self) -> None:
+        """
+        This method tests if a token is valid given a base64 encoded 
+        user id string and a valid token
+
+        Request Data:
+         - token: generated password reset token
+         - uidb64: base64 encoded user id
+        """
         request = self.factory.get(reverse('password_reset', kwargs={'token': self.token, 'uidb64': self.uidb64}))
         response = PasswordResetTokenCheckView.as_view()(request, uidb64=self.uidb64, token=self.token)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_check_if_token_is_valid_with_invalid_token(self) -> None:
+        """
+        This method tests if a token is valid given a base64 encoded 
+        user id string and an invalid token
+
+        Request Data:
+         - token: invalid token
+         - uidb64: base64 encoded user id
+        """
         request = self.factory.get(reverse('password_reset', kwargs={'token': "badaea", 'uidb64': self.uidb64}))
         response = PasswordResetTokenCheckView.as_view()(request, uidb64="badaea", token=self.token)
 
@@ -187,6 +278,15 @@ class PasswordResetTokenCheckViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_check_if_other_user_password_can_be_changed_with_other_user_token(self) -> None:
+        """
+        This method tests if a valid generated token for user A can 
+        reset the password of user B using the user id of the user B
+        insead of user A.
+
+        Request Data:
+         - token: generated password reset token for user A
+         - uidb64: base64 encoded user id of user B
+        """
         other_user = User.objects.create(email="otheruser@example.com")
         other_user.set_password("otherpassword")
         other_user.save()
@@ -200,7 +300,18 @@ class PasswordResetTokenCheckViewTestCase(TestCase):
 
     
 class PasswordResetWithTokenViewTestCase(TestCase):
+    """
+    Test cases for resetting user password
+    """
     def setUp(self) -> None:
+        """
+        Set up the test case.
+
+        1. Create a user object wich will be used to change the password
+        2. Generate a new password reset token for the created user
+        3. Generate base64 encoded uidb64 from user id
+        4. Create a factory instance to make requests to the view
+        """
         self.factory = RequestFactory()
         self.user = User.objects.create(email="testuser@example.com")
         self.user.set_password("password")
@@ -209,6 +320,15 @@ class PasswordResetWithTokenViewTestCase(TestCase):
         self.token = PasswordResetTokenGenerator().make_token(self.user)
 
     def test_reset_password_with_valid_token(self) -> None:
+        """
+        Test if a user password can be reset with a valid token, 
+        a valid user id and a valid password.
+        
+        Request Data:
+         - token: generated password reset token
+         - uidb64: base64 encoded user id
+         - password: new password
+        """
         data = {
             "password": "newpassword",
             "uidb64": str(self.uidb64),
@@ -222,6 +342,15 @@ class PasswordResetWithTokenViewTestCase(TestCase):
         
 
     def test_reset_password_with_invalid_token(self) -> None:
+        """
+        Test if a user password can be reset with a invalid token, 
+        a valid user id and a valid password.
+        
+        Request Data:
+         - token: invalid password reset token
+         - uidb64: base64 encoded user id
+         - password: new password
+        """
         data = {
             "password": "newpassword",
             "uidb64": str(self.uidb64),
@@ -234,6 +363,15 @@ class PasswordResetWithTokenViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
     
     def test_reset_password_with_other_user_token(self) -> None:
+        """
+        Test if a user A password can be reset with User B valid token, 
+        by using user A user id as uid.
+        
+        Request Data:
+         - token: generated password reset token for user B
+         - uidb64: base64 encoded user id of user A
+         - password: new password
+        """
         other_user = User.objects.create(email="otheruser@example.com")
         other_user.set_password("otherpassword")
         other_user.save()

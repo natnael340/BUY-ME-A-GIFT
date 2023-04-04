@@ -437,12 +437,12 @@ class WishListUnauthTest(TestCase):
         request = self.factory.get(reverse('wish_list_unauthorized', kwargs={'uuid': self.user.id}))
         
 
-        response = CategoryListView.as_view()(request, uuid=self.user.id)
+        response = WishListUnauthorizedView.as_view()(request, uuid=self.user.id)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         
         
     def test_wishlist_any_access_view_with_invalid_uuid(self) -> None:
         request = self.factory.get(reverse('wish_list_unauthorized', kwargs={'uuid': 'aead'}))
         
-        response = CategoryListView.as_view()(request, uuid=self.user.id)
+        response = WishListUnauthorizedView.as_view()(request, uuid=self.user.id)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
