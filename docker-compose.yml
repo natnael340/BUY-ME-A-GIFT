@@ -14,8 +14,9 @@ services:
       - DB_PORT=5432
       - EMAIL_HOST=sandbox.smtp.mailtrap.io
       - EMAIL_PORT=2525
-      - EMAIL_HOST_USER=114f899c18a50c
-      - EMAIL_HOST_PASSWORD=b9805b6a5cf7bb
+      - EMAIL_HOST_USER=0092622d3590ee
+      - EMAIL_HOST_PASSWORD=1da748785a6027
+      - DJANGO_SECRET_KEY=django-insecure-zb%6isg5em7k_aj1&fcl)fwalfin@ym$4w@9v=!f&+qnqmp7ep
     depends_on:
       - db
   db:
