@@ -1,3 +1,10 @@
+"""
+This module contains test cases for views related to 
+authentication and authorization.
+
+It contain endpoint test for user login, user registration and 
+password reset.
+"""
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from rest_framework.test import force_authenticate
@@ -17,13 +24,28 @@ from django.utils.encoding import smart_str, force_str, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 class LoginViewTest(TestCase):
+    """
+    Test case fo user login
+    """
     def setUp(self) -> None:
+        """
+        Set up the test case.
+
+        Create a user object wich will be used to test the login
+        """
         self.factory = RequestFactory()
         user = User.objects.create(email="abcd@gmail.com")
         user.set_password("password")
         user.save()
 
     def test_login_view_with_correct_credentials(self) -> None:
+        """
+        This test check if a user can login with correct credentials
+
+        Request Data:
+         - email: valid user email
+         - password: valid user password
+        """
         data = {
             "email": "abcd@gmail.com",
             "password": "password"
@@ -35,9 +57,16 @@ class LoginViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_login_view_with_incorrect_credentials(self) -> None:
+        """
+        This test check if a user can login with incorrect credentials
+
+        Request Data:
+         - email: valid user email 
+         - password: invalid user password
+        """
         data = {
             "email": "abcd@gmail.com",
-            "password": "passwor1"
+            "password": "password"
         }
         request=self.factory.post(reverse('login'), data=data, format='json')
 
@@ -46,6 +75,12 @@ class LoginViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
     def test_login_view_with_incomplete_credentials(self) -> None:
+        """
+        This test check if a user can login with only email addresses
+
+        Request Data:
+         - email: valid user email
+        """
         data = {
             "email": "abcd@gmail.com"
         }

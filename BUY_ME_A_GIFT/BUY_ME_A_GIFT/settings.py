@@ -129,6 +129,11 @@ SWAGGER_SETTINGS = {
       }
    }
 }
+
+SWAGGER_SETTINGS = {
+   'USE_SESSION_AUTH': False
+}
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'sandbox.smtp.mailtrap.io')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '114f899c18a50c')

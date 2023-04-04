@@ -1,3 +1,8 @@
+"""
+This module contains views for User authentication and registration.
+
+"""
+
 from django.shortcuts import render
 from rest_framework.generics import GenericAPIView
 from .serializers import UserLoginSerializers, UserRegisterSerializers, PasswordResetSerializer, SetNewPasswordSerializer, PasswordResetTokenCheckSerializer
@@ -15,6 +20,15 @@ from drf_yasg.utils import swagger_auto_schema
 
 
 class LoginView(GenericAPIView):
+    """
+    Authenticate user with provided login credentials.
+
+    Required fields in request data:
+        - email
+        - password
+    Return access_token and refresh_token
+
+    """
     serializer_class = UserLoginSerializers
     permission_classes=[AllowAny]
 
@@ -29,6 +43,15 @@ class LoginView(GenericAPIView):
 
 
 class SignUpView(GenericAPIView):
+    """
+    Register a new user with provided details.
+
+    Required fields in request data:
+        - email
+        - password
+
+    Returns access and refresh token on successful registration.
+    """
     serializer_class = UserRegisterSerializers
     permission_classes=[AllowAny]
 
@@ -43,6 +66,14 @@ class SignUpView(GenericAPIView):
         return Response({'token': str(token.access_token), 'refresh': str(token)})
 
 class PasswordResetView(GenericAPIView):
+    """
+    Send password reset link to user's email.
+
+    Required fields in request data:
+        - email
+
+    Returns success message on successful email sending.
+    """
     serializer_class = PasswordResetSerializer
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -57,6 +88,15 @@ class PasswordResetView(GenericAPIView):
         return Response({'success': True, 'message': 'Password reset link was successfully sent to your email'})
 
 class PasswordResetTokenCheckView(GenericAPIView):
+    """
+    Check validity of password reset token based on user id.
+
+    Required path parameters:
+        - uidb64: base64 encoded user id
+        - token: password reset token
+
+    Returns success message on valid token, error message on invalid or expired token.
+    """
     serializer_class = PasswordResetTokenCheckSerializer
     permission_classes = [AllowAny]
 
@@ -75,6 +115,18 @@ class PasswordResetTokenCheckView(GenericAPIView):
 
 @swagger_auto_schema(security=[])
 class SetNewPasswordApiView(GenericAPIView):
+    """
+    Reset the password of a user.
+
+    Required fields in request data:
+        - uidb64: base64 encoded user id
+        - token: password reset token
+        - password: new password
+
+    Changes the password of a user to the new password if the fields are valid.
+
+    Returns success message on valid token, uuidb64, error message on invalid or expired token.
+    """
     serializer_class = SetNewPasswordSerializer
     permission_classes=[AllowAny]
 
