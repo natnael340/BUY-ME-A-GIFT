@@ -87,11 +87,11 @@ WSGI_APPLICATION = 'BUY_ME_A_GIFT.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'buy_me_a_gift_vinhood',
-        'USER': 'postgres',
-        'PASSWORD': 'root',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'USER': os.environ.get('DB_USER','postgres'),
+        'PASSWORD':os.environ.get('DB_PASSWORD','root'),
+        'NAME': os.environ.get('DB_DB','postgres'),
+        'PORT': os.environ.get('DB_PORT','5432'),
+        'HOST': os.environ.get('DB_HOST','localhost'),
     }
 }
 
@@ -120,11 +120,20 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
-EMAIL_HOST_USER = '114f899c18a50c'
-EMAIL_HOST_PASSWORD = 'b9805b6a5cf7bb'
-EMAIL_PORT = '2525'
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'sandbox.smtp.mailtrap.io')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '114f899c18a50c')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD','b9805b6a5cf7bb')
+EMAIL_PORT = os.environ.get('EMAIL_PORT', '2525')
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 

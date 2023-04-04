@@ -1,3 +1,8 @@
+"""
+This file contains URL patterns for User authentication, registration and
+password reset.
+"""
+
 from django.urls import path
 from .views import LoginView, SignUpView, PasswordResetView, PasswordResetTokenCheckView, SetNewPasswordApiView
 

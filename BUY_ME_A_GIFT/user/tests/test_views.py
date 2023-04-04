@@ -179,8 +179,8 @@ class PasswordResetWithTokenViewTestCase(TestCase):
             "uidb64": str(self.uidb64),
             "token": str(self.token)
         }
-        data = json.dumps(data)
-        request=self.factory.patch(reverse('password_reset_done'), data=data, content_type='application/json')
+        str_data = json.dumps(data)
+        request=self.factory.patch(reverse('password_reset_done'), data=str_data, content_type='application/json')
         response = SetNewPasswordApiView.as_view()(request)
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -192,8 +192,8 @@ class PasswordResetWithTokenViewTestCase(TestCase):
             "uidb64": str(self.uidb64),
             "token": "axaca"
         }
-        data = json.dumps(data)
-        request=self.factory.patch(reverse('password_reset_done'), data=data, content_type='application/json')
+        str_data = json.dumps(data)
+        request=self.factory.patch(reverse('password_reset_done'), data=str_data, content_type='application/json')
         response = SetNewPasswordApiView.as_view()(request)
         
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -209,8 +209,8 @@ class PasswordResetWithTokenViewTestCase(TestCase):
             "uidb64": str(self.uidb64),
             "token": str(other_token)
         }
-        data = json.dumps(data)
-        request=self.factory.patch(reverse('password_reset_done'), data=data, content_type='application/json')
+        str_data = json.dumps(data)
+        request=self.factory.patch(reverse('password_reset_done'), data=str_data, content_type='application/json')
         response = SetNewPasswordApiView.as_view()(request)
         
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

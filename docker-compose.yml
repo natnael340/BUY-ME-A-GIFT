@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  vinhoodapp:
+    container_name: BUY_ME_A_GIFT
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_NAME=buy_me_a_gift_vinhood
+      - DB_USER=postgres
+      - DB_PASS=root
+      - DB_HOST=db
+      - DB_PORT=5432
+      - EMAIL_HOST=sandbox.smtp.mailtrap.io
+      - EMAIL_PORT=2525
+      - EMAIL_HOST_USER=114f899c18a50c
+      - EMAIL_HOST_PASSWORD=b9805b6a5cf7bb
+    depends_on:
+      - db
+  db:
+    container_name: db
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=buy_me_a_gift_vinhood
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata: {}

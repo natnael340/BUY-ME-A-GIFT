@@ -64,7 +64,7 @@ class ProductCreateViewTest(TestCase):
         }
         request = self.factory.post(reverse('product_create'), data=product)
         token = RefreshToken.for_user(self.user)
-        force_authenticate(request, self.user, token=str(token.access_token))
+        force_authenticate(request, self.user, token=token.access_token)
 
        
         response = ProductCreateView.as_view()(request)
@@ -84,7 +84,7 @@ class ProductCreateViewTest(TestCase):
         }
         request = self.factory.post(reverse('product_create'), data=product)
         token = RefreshToken.for_user(self.user)
-        force_authenticate(request, self.user, token=str(token.access_token))
+        force_authenticate(request, self.user, token=token.access_token)
 
        
         response = ProductCreateView.as_view()(request)
@@ -101,7 +101,7 @@ class ProductCreateViewTest(TestCase):
         }
         request = self.factory.post(reverse('product_create'), data=product)
         token = RefreshToken.for_user(self.user)
-        force_authenticate(request, self.user, token=str(token.access_token))
+        force_authenticate(request, self.user, token=token.access_token)
 
        
         response = ProductCreateView.as_view()(request)
@@ -126,7 +126,7 @@ class ProductCreateViewTest(TestCase):
         data = json.dumps(product)
         request = self.factory.post(reverse('product_create'), data=data, content_type='application/json')
         token = RefreshToken.for_user(self.user)
-        force_authenticate(request, self.user, token=str(token.access_token))
+        force_authenticate(request, self.user, token=token.access_token)
 
        
         response = ProductCreateView.as_view()(request)
@@ -160,7 +160,7 @@ class ProductUpdateViewTest(TestCase):
         }
         request = self.factory.put(reverse('product_update', kwargs={'id': self.product.id}), data=product, content_type='application/json')
         token = RefreshToken.for_user(self.user)
-        force_authenticate(request, self.user, token=str(token.access_token))
+        force_authenticate(request, self.user, token=token.access_token)
 
         response = ProductUpdateView.as_view()(request, id=self.product.id)
         
@@ -175,7 +175,7 @@ class ProductUpdateViewTest(TestCase):
         }
         request = self.factory.put(reverse('product_update', kwargs={'id': self.product.id}), data=product, content_type='application/json')
         token = RefreshToken.for_user(self.user)
-        force_authenticate(request, self.user, token=str(token.access_token))
+        force_authenticate(request, self.user, token=token.access_token)
 
         response = ProductUpdateView.as_view()(request, id=self.product.id)
       
@@ -199,7 +199,7 @@ class ProductDeleteViewTest(TestCase):
        
         request = self.factory.delete(reverse('product_delete', kwargs={'id': self.product.id}))
         token = RefreshToken.for_user(self.user)
-        force_authenticate(request, self.user, token=str(token.access_token))
+        force_authenticate(request, self.user, token=token.access_token)
 
         response = ProductDeleteView.as_view()(request, id=self.product.id)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -208,7 +208,7 @@ class ProductDeleteViewTest(TestCase):
         
         request = self.factory.delete(reverse('product_delete', kwargs={'id': self.product.id}))
         token = RefreshToken.for_user(self.user2)
-        force_authenticate(request, self.user2, token=str(token.access_token))
+        force_authenticate(request, self.user2, token=token.access_token)
 
         response = ProductDeleteView.as_view()(request, id=self.product.id)
     
@@ -252,7 +252,7 @@ class CategoryCreateViewTest(TestCase):
     def test_category_create_view(self) -> None:
         request = self.factory.post(reverse('categories_create'), data={'name': 'test'}, format='json')
         token = RefreshToken.for_user(self.user)
-        force_authenticate(request, self.user, token=str(token.access_token))
+        force_authenticate(request, self.user, token=token.access_token)
 
         response = CategoryCreateView.as_view()(request)
         
@@ -263,7 +263,7 @@ class CategoryCreateViewTest(TestCase):
     def test_category_create_view_with_missing_name(self) -> None:
         request = self.factory.post(reverse('categories_create'), data={}, format='json')
         token = RefreshToken.for_user(self.user)
-        force_authenticate(request, self.user, token=str(token.access_token))
+        force_authenticate(request, self.user, token=token.access_token)
 
         response = CategoryCreateView.as_view()(request)
         
@@ -280,7 +280,7 @@ class CategoryDeleteViewTest(TestCase):
     def test_category_delete_view(self) -> None:
         request = self.factory.delete(reverse('category_delete', kwargs={'id': self.product_category.id}))
         token = RefreshToken.for_user(self.user)
-        force_authenticate(request, self.user, token=str(token.access_token))
+        force_authenticate(request, self.user, token=token.access_token)
 
         response = CategoryDeleteView.as_view()(request, id=self.product_category.id)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -289,7 +289,7 @@ class CategoryDeleteViewTest(TestCase):
     def test_category_delete_view_from_another_user(self) -> None:
         request = self.factory.delete(reverse('category_delete', kwargs={'id': self.product_category.id}))
         token = RefreshToken.for_user(self.user2)
-        force_authenticate(request, self.user2, token=str(token.access_token))
+        force_authenticate(request, self.user2, token=token.access_token)
 
         response = CategoryDeleteView.as_view()(request, id=self.product_category.id)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -306,7 +306,7 @@ class CategoryListViewTest(TestCase):
     def test_category_list_view(self) -> None:
         request = self.factory.get(reverse('categories'))
         token = RefreshToken.for_user(self.user)
-        force_authenticate(request, self.user, token=str(token.access_token))
+        force_authenticate(request, self.user, token=token.access_token)
 
         response = CategoryListView.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -316,7 +316,7 @@ class CategoryListViewTest(TestCase):
 
         request = self.factory.get(reverse('categories'))
         token = RefreshToken.for_user(self.user2)
-        force_authenticate(request, self.user2, token=str(token.access_token))
+        force_authenticate(request, self.user2, token=token.access_token)
 
         response = CategoryListView.as_view()(request)
 
@@ -351,7 +351,7 @@ class WishListCreateViewTest(TestCase):
         }
         request = self.factory.post(reverse('wishlist_create'), data=data, format='json')
         token = RefreshToken.for_user(self.user)
-        force_authenticate(request, self.user, token=str(token.access_token))
+        force_authenticate(request, self.user, token=token.access_token)
 
         response = WishCreateView.as_view()(request)
         
@@ -362,7 +362,7 @@ class WishListCreateViewTest(TestCase):
     def test_wishlist_create_view_with_missing_product_id(self) -> None:
         request = self.factory.post(reverse('wishlist_create'), data={}, format='json')
         token = RefreshToken.for_user(self.user)
-        force_authenticate(request, self.user, token=str(token.access_token))
+        force_authenticate(request, self.user, token=token.access_token)
 
         response = CategoryCreateView.as_view()(request)
         
@@ -375,7 +375,7 @@ class WishListCreateViewTest(TestCase):
         }
         request = self.factory.post(reverse('wishlist_create'), data=data, format='json')
         token = RefreshToken.for_user(self.user)
-        force_authenticate(request, self.user, token=str(token.access_token))
+        force_authenticate(request, self.user, token=token.access_token)
 
         response = WishCreateView.as_view()(request)
         
@@ -384,7 +384,7 @@ class WishListCreateViewTest(TestCase):
         }
         request = self.factory.post(reverse('wishlist_create'), data=data, format='json')
         token = RefreshToken.for_user(self.user)
-        force_authenticate(request, self.user, token=str(token.access_token))
+        force_authenticate(request, self.user, token=token.access_token)
 
         response = WishCreateView.as_view()(request)
         
@@ -410,7 +410,7 @@ class WishListViewTest(TestCase):
     def test_wishlist_view(self) -> None:
         request = self.factory.get(reverse('wishlist'))
         token = RefreshToken.for_user(self.user)
-        force_authenticate(request, self.user, token=str(token.access_token))
+        force_authenticate(request, self.user, token=token.access_token)
 
         response = WishListView.as_view()(request)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

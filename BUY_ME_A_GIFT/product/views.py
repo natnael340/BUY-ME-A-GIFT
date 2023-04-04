@@ -8,6 +8,10 @@ from rest_framework.response import Response
 from uuid import uuid4
 from user.models import User
 from rest_framework import status
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.request import Request
+from typing import Any
+
 # Create your views here.
 
 class ISAuthorized(BasePermission):
@@ -15,12 +19,16 @@ class ISAuthorized(BasePermission):
         if obj.owner == request.user:
             return True
         return False
-    
+@swagger_auto_schema(security=[])    
 class ProductView(RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductListSerializer
     permission_classes = [AllowAny]
     lookup_field = 'id'
+
+    @swagger_auto_schema(security=[])
+    def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return super().get(request, *args, **kwargs)
 class ProductCreateView(CreateAPIView):
     queryset = Product.objects.all()
     authentication_classes = [JWTAuthentication]
@@ -30,7 +38,7 @@ class ProductCreateView(CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs) -> Response:
         serializer = self.get_serializer(data=self.request.data, many=isinstance(self.request.data, list))
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -43,7 +51,6 @@ class ProductUpdateView(UpdateAPIView):
     serializer_class = ProductCreateSerializer
     permission_classes=[IsAuthenticated & ISAuthorized]
     lookup_field = 'id'
-
 class ProductListView(ListAPIView):
     serializer_class = ProductListSerializer
     permission_classes = [AllowAny]
@@ -58,6 +65,11 @@ class ProductListView(ListAPIView):
             queryset = queryset.filter(price__lt=price_lt)
         
         return queryset
+    
+    @swagger_auto_schema(security=[])
+    def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return super().get(request, *args, **kwargs)
+    
 class ProductDeleteView(DestroyAPIView):
     serializer_class = ProductListSerializer
     queryset = Product.objects.all()
@@ -72,6 +84,8 @@ class ProductDeleteView(DestroyAPIView):
 class CategoryListView(ListAPIView):
     queryset = ProductCategory.objects.all()
     serializer_class = ProductCategorySerializer
+    permission_classes = [IsAuthenticated, ISAuthorized]
+
 
 class CategoryCreateView(CreateAPIView):
     queryset = ProductCategory.objects.all()
@@ -107,7 +121,7 @@ class WishCreateView(CreateAPIView):
 
     def get_serializer_context(self):
         return {'request': self.request}
-    
+
 class WishListUnauthorizedView(ListAPIView):
     serializer_class = ProductListSerializer
     permission_classes = [AllowAny]
@@ -135,4 +149,7 @@ class WishListUnauthorizedView(ListAPIView):
                 queryset = queryset.order_by('rank')
 
         return queryset
-        
+    
+    @swagger_auto_schema(security=[])
+    def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return super().get(request, *args, **kwargs)
