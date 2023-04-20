@@ -1,3 +1,30 @@
+"""
+This module contains test cases for the Django models of the user, product, and wishlist apps.
+
+Classes:
+    ProductCategoryModelTestCase: Test case for the ProductCategory model.
+    ProductModelTestCase: Test case for the Product model.
+    WishListModelTestCase: Test case for the WishList model.
+
+Methods:
+    setUp: Method that sets up the required test data before each test method is run.
+
+    test_product_category_creation: Method that tests the creation of a ProductCategory object.
+    test_product_category_deletion: Method that tests the deletion of a ProductCategory object.
+    test_product_category_deletion_upon_user_deletion: Method that tests the deletion of a ProductCategory object upon the deletion of its owner.
+
+    test_product_creation: Method that tests the creation of a Product object.
+    test_product_deletion: Method that tests the deletion of a Product object.
+    test_product_deletion_upon_user_deletion: Method that tests the deletion of a Product object upon the deletion of its owner.
+    test_product_deletion_upon_category_deletion: Method that tests the deletion of a Product object upon the deletion of its category.
+
+    test_wishlist_add_product: Method that tests the addition of a Product object to a WishList object.
+    test_wishlist_deletion: Method that tests the deletion of a WishList object.
+    test_wishlist_deletion_upon_user_deletion: Method that tests the deletion of a WishList object upon the deletion of its user.
+"""
+
+
+
 from django.test import TestCase
 from user.models import User
 from product.models import ProductCategory, Product, WishList

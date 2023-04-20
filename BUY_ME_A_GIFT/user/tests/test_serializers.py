@@ -23,7 +23,7 @@ class UserLoginSerializersTest(TestCase):
     This test case checks that if a user can authenticate with the correct credentials
 
     """
-    def setUp(self):
+    def setUp(self) -> None:
         """
         Set up the test case.
 
@@ -38,7 +38,7 @@ class UserLoginSerializersTest(TestCase):
         )
         self.serializer = UserLoginSerializers()
 
-    def test_validate(self):
+    def test_validate(self) -> None:
         """
         This method checks that the user can authenticate
         with the required arguments
@@ -56,7 +56,7 @@ class UserLoginSerializersTest(TestCase):
         self.assertEqual(serializer.validated_data['email'], 'test@test.com')
         
 
-    def test_validate_invalid_email(self):
+    def test_validate_invalid_email(self) -> None:
         """
         This test checks that if the user can authenticate with out
         providing a valid email address
@@ -71,7 +71,7 @@ class UserLoginSerializersTest(TestCase):
         with self.assertRaises(serializers.ValidationError):
             self.serializer.validate(validated_data)
 
-    def test_validate_invalid_password(self):
+    def test_validate_invalid_password(self) -> None:
         """
         This test checks that if the user can authenticate with out
         providing a valid password
@@ -86,7 +86,7 @@ class UserLoginSerializersTest(TestCase):
         with self.assertRaises(serializers.ValidationError):
             self.serializer.validate(validated_data)
 
-    def test_validate_missing_email(self):
+    def test_validate_missing_email(self) -> None:
         """
         This test checks that if the user can authenticate with out
         providing an email address
@@ -100,7 +100,7 @@ class UserLoginSerializersTest(TestCase):
         serializer = UserLoginSerializers(data=data)
         self.assertFalse(serializer.is_valid())
 
-    def test_validate_missing_password(self):
+    def test_validate_missing_password(self) -> None:
         """
         This test checks that if the user can authenticate with out
         providing an password
@@ -121,7 +121,7 @@ class UserRegisterSerializersTest(TestCase):
     to True.
 
     """
-    def setUp(self):
+    def setUp(self) -> None:
         """
         Set up the test case.
         
@@ -130,7 +130,7 @@ class UserRegisterSerializersTest(TestCase):
         """
         self.serializer = UserRegisterSerializers()
 
-    def test_create(self):
+    def test_create(self) -> None:
         """
         Test that a User object can be created with the expected attributes.
 
@@ -142,7 +142,7 @@ class UserRegisterSerializersTest(TestCase):
         self.assertEqual(result.email, 'test@test.com')
         self.assertTrue(result.check_password('testpass123'))
 
-    def test_create_existing_email(self):
+    def test_create_existing_email(self) -> None:
         """
         Test that a User object can be created with the duplicate email address.
         
@@ -157,7 +157,7 @@ class UserRegisterSerializersTest(TestCase):
         with self.assertRaises(serializers.ValidationError):
             self.serializer.create(user_data)
 
-    def test_missing_email(self):
+    def test_missing_email(self) -> None:
         """
         Test that a User object can be created with out email address.
         
@@ -168,7 +168,7 @@ class UserRegisterSerializersTest(TestCase):
         serializer = UserRegisterSerializers(data=data)
         self.assertFalse(serializer.is_valid())
 
-    def test_missing_password(self):
+    def test_missing_password(self) -> None:
         """
         Test that a User object can be created with out email address.
         
@@ -185,7 +185,7 @@ class PasswordResetSerializerTest(TestCase):
     attributes, and that They can be sent to the email adress of the user.
 
     """
-    def setUp(self):
+    def setUp(self) -> None:
         """
         Set up the test case.
         
@@ -200,7 +200,7 @@ class PasswordResetSerializerTest(TestCase):
         password='testpass123'
         )
 
-    def test_validate_invalid_email(self):
+    def test_validate_invalid_email(self) -> None:
         """
         This method checks if token can be generated with invalid email address
         """
@@ -208,11 +208,11 @@ class PasswordResetSerializerTest(TestCase):
         with self.assertRaises(serializers.ValidationError):
             self.serializer.validate(validated_data)
 
-    def test_validate_missing_email(self):
+    def test_validate_missing_email(self) -> None:
         """
         This method checks if token can be generated with out providing email address
         """
-        data = {}
+        data: dict = {}
         serializer = UserRegisterSerializers(data=data)
         self.assertFalse(serializer.is_valid())
 
@@ -221,7 +221,7 @@ class SetNewPasswordSerializerTest(TestCase):
     Test cases for the Reset the user password given the 
     uid and token class.
     """
-    def setUp(self):
+    def setUp(self) -> None:
         """
         Set Up the Test Case
 
@@ -237,7 +237,7 @@ class SetNewPasswordSerializerTest(TestCase):
         self.uid = urlsafe_base64_encode(smart_bytes(self.user.id))
         self.token = PasswordResetTokenGenerator().make_token(self.user)
 
-    def test_validate(self):
+    def test_validate(self) -> None:
         """
         This method checks if password can be reset with valid 
         token and uid of the user
@@ -246,7 +246,7 @@ class SetNewPasswordSerializerTest(TestCase):
         result = self.serializer.validate(validated_data)
         self.assertEqual(result, validated_data)
 
-    def test_validate_invalid_token(self):
+    def test_validate_invalid_token(self) -> None:
         """
         The method check if password can be set with invalid token.
         """
@@ -254,7 +254,7 @@ class SetNewPasswordSerializerTest(TestCase):
         with self.assertRaises(AuthenticationFailed):
             self.serializer.validate(validated_data)
 
-    def test_validate_invalid_uidb64(self):
+    def test_validate_invalid_uidb64(self) -> None:
         """
         The method check if password can be set with invalid user id.
         """
@@ -262,7 +262,7 @@ class SetNewPasswordSerializerTest(TestCase):
         with self.assertRaises(AuthenticationFailed):
             self.serializer.validate(validated_data)
 
-    def test_validate_missing_password(self):
+    def test_validate_missing_password(self) -> None:
         """
         The method check if password can be set with out password parameter.
         """
@@ -270,7 +270,7 @@ class SetNewPasswordSerializerTest(TestCase):
         serializer = SetNewPasswordSerializer(data=data)
         self.assertFalse(serializer.is_valid())
 
-    def test_validate_missing_uidb64(self):
+    def test_validate_missing_uidb64(self) -> None:
         """
         The method check if password can be set with out user id.
         """
@@ -278,7 +278,7 @@ class SetNewPasswordSerializerTest(TestCase):
         serializer = SetNewPasswordSerializer(data=data)
         self.assertFalse(serializer.is_valid())
 
-    def test_validate_missing_token(self):
+    def test_validate_missing_token(self) -> None:
         """
         The method check if password can be set with out token.
         """

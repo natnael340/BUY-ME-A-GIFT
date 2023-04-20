@@ -14,11 +14,11 @@ from django.dispatch import receiver
 # Create your models here.
 
 
-class UserManager(BaseUserManager):
+class UserManager(BaseUserManager['User']):
 
     """Custom user manager for managing users"""
 
-    def create_user(self, email, password=None):
+    def create_user(self, email: str, password: str|None=None) -> 'User':
         """Create and save a new user with given email and password."""
         if not email:
             raise ValueError('Users must have an email address')
@@ -27,7 +27,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password):
+    def create_superuser(self, email: str, password: str) -> 'User':
         """Create and save a new superuser or admin user with given email and password."""
         user = self.create_user(email, password=password)
         user.is_admin = True

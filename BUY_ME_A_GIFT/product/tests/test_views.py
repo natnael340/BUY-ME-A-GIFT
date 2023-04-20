@@ -1,3 +1,19 @@
+"""
+This module contains test cases for testing:
+ - Product creation
+ - Product update
+ - Product deletion
+ - product listing
+ - Product Category creation
+ - Product category deletion
+ - Product category listing
+ - Wishlist creation
+ - Wishlist deletion
+ - Wishlist product listing
+
+It contains testing enpoints having the above listed functionalities
+"""
+
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from rest_framework.test import force_authenticate
@@ -22,7 +38,19 @@ import json
 
 
 class ProductViewTest(TestCase):
+    """
+    This test cases test if a product can be returned
+    given a valid product identifier
+    """
     def setUp(self)  -> None:
+        """
+        Set up the test case.
+
+        1. Create a user object wich will be used to create a product and product category
+        2. Create a product category to be used to create a product
+        3. create a product to test if it can be used in the view properly
+        4. Create a request factory instance to make requests to the view
+        """
         self.factory = RequestFactory()
         self.user = User.objects.create(email="test@example.com", password="123456")
         self.product_category = ProductCategory.objects.create(name="test", owner=self.user)
@@ -37,17 +65,33 @@ class ProductViewTest(TestCase):
         
 
     def test_product_view(self)  -> None:
+        """
+        This function test if product can be shown given the valid product id
+
+        Request data:
+         - product_id: valid product id
+        """
         request = self.factory.get(reverse('product', kwargs={'id': self.product.id}))
         response = ProductView.as_view()(request, id=self.product.id)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['name'], self.product.name)
 
     def test_product_view_notfound(self)  -> None:
+        """
+        This function verify that a product can't be returned given
+        a non-existing product id or invalid product id.
+
+        Request data:
+        - product_id: invalid product id
+        """
         request = self.factory.get(reverse('product', kwargs={'id': 1000}))
         response = ProductView.as_view()(request, id=1000)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 class ProductCreateViewTest(TestCase):
+    """
+    
+    """
     def setUp(self)  -> None:
         self.factory = RequestFactory()
         self.user = User.objects.create(email="test@example.com", password="123456")

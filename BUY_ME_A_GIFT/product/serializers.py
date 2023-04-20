@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Product, ProductCategory, WishList
+from typing import Any
 
 class ProductCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,7 +29,7 @@ class WishListSerializer(serializers.ModelSerializer):
     class Meta:
         model = WishList
         fields = ['products']
-    def to_representation(self, instance):
+    def to_representation(self, instance: WishList | None) -> Any:
         if instance is None:
             return {}
         return super().to_representation(instance)
@@ -36,14 +37,14 @@ class WishListSerializer(serializers.ModelSerializer):
 class WishListCreateSerializer(serializers.Serializer):
     product_id = serializers.IntegerField() 
     
-    def validate_product_id(self, value):
+    def validate_product_id(self, value: int) -> Product|None:
         try:
             product = Product.objects.get(id=value)
             return product
         except Product.DoesNotExist:
             raise serializers.ValidationError("Invalid product id")
         
-    def validate(self, attrs):
+    def validate(self, attrs: dict) -> dict:
         user = self.context.get('request').user
         try:
             wishlist = user.wishlist
@@ -51,13 +52,12 @@ class WishListCreateSerializer(serializers.Serializer):
             wishlist = None
 
         product = attrs['product_id']
-        print(product)
         if wishlist and product.product_category in [p.product_category for p in wishlist.products.all()]:
             raise serializers.ValidationError('You can add only one product from each category to your wishlist')
         
         return attrs
     
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> dict:
         user = self.context.get('request').user
         try:
             wishlist = user.wishlist
@@ -68,9 +68,7 @@ class WishListCreateSerializer(serializers.Serializer):
             wishlist.save()
         
         product = validated_data['product_id']
-        print("product", product)
         wishlist.products.add(product)  
-        print("add products")
         wishlist.save()
         #wishlist.refresh_from_db()
         return {"product_id": product.id}
@@ -81,7 +79,7 @@ class WishListUnauthorizedSerializer(serializers.ModelSerializer):
     class Meta:
         model = WishList
         fields = ['products']
-    def to_representation(self, instance):
+    def to_representation(self, instance: WishList | None) -> dict|Any:
         if instance is None:
             return {}
         return super().to_representation(instance)

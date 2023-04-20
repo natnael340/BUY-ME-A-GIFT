@@ -33,7 +33,7 @@ class LoginView(GenericAPIView):
     permission_classes=[AllowAny]
 
     @swagger_auto_schema(security=[])
-    def post(self, request) -> Response:
+    def post(self, request: Request) -> Response:
         seralizer = self.serializer_class(data=request.data)
         seralizer.is_valid(raise_exception=True)
         user = seralizer.validated_data['user']
@@ -82,7 +82,7 @@ class PasswordResetView(GenericAPIView):
         return {'request': self.request}
 
     @swagger_auto_schema(security=[])
-    def post(self, request) -> Response:
+    def post(self, request: Request) -> Response:
         serilaizer = self.serializer_class(data=request.data, context={'request': request})
         serilaizer.is_valid(raise_exception=True)
         return Response({'success': True, 'message': 'Password reset link was successfully sent to your email'})

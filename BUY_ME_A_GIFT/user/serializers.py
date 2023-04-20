@@ -19,12 +19,13 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from .utils import Util
 from rest_framework.exceptions import AuthenticationFailed
+from typing import Any
 class UserLoginSerializers(serializers.Serializer):
     """Serializer for User login."""
     email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True)
 
-    def validate(self, attrs) -> dict:
+    def validate(self, attrs: dict) -> dict:
         """Validate email and password for login."""
         email = attrs.get('email')
         password = attrs.get('password')
@@ -51,7 +52,7 @@ class UserRegisterSerializers(serializers.Serializer):
         model = User
         fields = ('email', 'password')
         
-    def create(self, validated_data) -> User:
+    def create(self, validated_data: dict[str, str]) -> User:
         """Create a new User with Email and Password"""
         if User.objects.filter(email=validated_data['email']).exists():
             raise serializers.ValidationError("Email already exists")
@@ -65,7 +66,7 @@ class PasswordResetSerializer(serializers.Serializer):
     """Serializer for password reset request."""    
     email = serializers.EmailField(required=True)    
 
-    def validate(self, attrs) -> dict:
+    def validate(self, attrs:dict) -> Any:
         """Validate the password reset request using the email"""
         email = attrs.get('email', '')
         if User.objects.filter(email=email).exists():
@@ -94,7 +95,7 @@ class SetNewPasswordSerializer(serializers.Serializer):
     uidb64 = serializers.CharField(required=True, write_only=True)
     token = serializers.CharField(required=True, write_only=True)
 
-    def validate(self, attrs:dict) -> dict:
+    def validate(self, attrs:dict) -> Any:
         """Validate uidb64, token, and the new password to update the users password."""
         try:
             uid = smart_str(urlsafe_base64_decode(attrs.get('uidb64', '')))

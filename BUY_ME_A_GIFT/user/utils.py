@@ -3,6 +3,7 @@ This module is a utility class that provides Email sending functionality
 """
 
 from django.core.mail import EmailMessage
+from typing import Dict
 
 class Util:
     """
@@ -16,7 +17,8 @@ class Util:
     Raises error if the data is invalid else it returns nothing
     """
     @classmethod
-    def send_email(self, data):
+    def send_email(self, data: Dict[str, str]) -> None:
+        
         email = EmailMessage(
             subject=data['email_subject'],
             body=data['email_body'],
